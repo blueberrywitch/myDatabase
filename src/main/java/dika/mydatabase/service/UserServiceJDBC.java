@@ -1,6 +1,7 @@
 package dika.mydatabase.service;
 
 import dika.mydatabase.model.User;
+import dika.mydatabase.util.DatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,13 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class UserServiceJDBC implements UserService {
+public class UserServiceJDBC implements UserService, AutoCloseable {
 
     private static UserServiceJDBC instance;
     private final Connection conn;
 
     private UserServiceJDBC() throws SQLException {
-        this.conn = dika.mydatabase.util.Connection.connection();
+        this.conn = DatabaseConnection.connection();
     }
 
     public static UserServiceJDBC getInstance() throws SQLException {
@@ -127,6 +128,11 @@ public class UserServiceJDBC implements UserService {
         } catch (SQLException e) {
             System.out.println("Error cleaning table: " + e.getMessage());
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        conn.close();
     }
 }
 

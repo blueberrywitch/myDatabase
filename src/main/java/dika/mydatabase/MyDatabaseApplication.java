@@ -18,24 +18,27 @@ public class MyDatabaseApplication {
     }
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
-        UserServiceJDBC userServiceJDBC = UserServiceJDBC.getInstance();
+        try (UserServiceJDBC userServiceJDBC = UserServiceJDBC.getInstance()) {
+            userServiceJDBC.createUsersTable();
 
-        userServiceJDBC.createUsersTable();
+            userServiceJDBC.addUser("Dika", "Dikov", 25);
+            userServiceJDBC.addUser("Vlad", "Kolesnikov", 19);
+            userServiceJDBC.addUser("Amir", "Matygulin", 27);
+            userServiceJDBC.addUser("Lera", "Stepchenkova", 21);
+            userServiceJDBC.addUser("Dina", "SDd", 1);
 
-        userServiceJDBC.addUser("Dika", "Dikov", 25);
-        userServiceJDBC.addUser("Vlad", "Kolesnikov", 19);
-        userServiceJDBC.addUser("Amir", "Matygulin", 27);
-        userServiceJDBC.addUser("Lera", "Stepchenkova", 21);
-        userServiceJDBC.addUser("Dina", "SDd", 1);
+            userServiceJDBC.removeUserById(1);
 
-        userServiceJDBC.removeUserById(1);
+            userServiceJDBC.getAllUsers().forEach(System.out::println);
 
-        userServiceJDBC.getAllUsers().forEach(System.out::println);
+            userServiceJDBC.cleanUsersTable();
 
-        userServiceJDBC.cleanUsersTable();
+            userServiceJDBC.getAllUsers().forEach(System.out::println);
 
-        userServiceJDBC.getAllUsers().forEach(System.out::println);
+            userServiceJDBC.dropUsersTable("employees");
+        } catch (Exception e) {
+            System.out.println("Error initializing UserServiceJDBC: " + e.getMessage());
+        }
 
-        userServiceJDBC.dropUsersTable("employees");
     }
 }

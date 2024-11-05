@@ -3,7 +3,7 @@ package dika.mydatabase.util;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class Connection implements AutoCloseable {
+public class DatabaseConnection implements AutoCloseable {
 
     public static java.sql.Connection connection() {
         java.sql.Connection connection = null;
