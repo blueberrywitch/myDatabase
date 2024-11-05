@@ -1,4 +1,4 @@
-package dika.mydatabase;
+package dika.mydatabase.model;
 
 public class User {
     private long id;
@@ -17,6 +17,9 @@ public class User {
         this.name = name;
         this.lastName = lastName;
         this.age = age;
+    }
+
+    public User() {
     }
 
     public long getId() {
