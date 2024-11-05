@@ -1,6 +1,7 @@
 package dika.mydatabase.service;
 
 import dika.mydatabase.model.User;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,7 +31,7 @@ public class UserServices implements UserService {
     public void addUser(String name, String lastName, int age) {
         String sql = "INSERT INTO employees (name, lastName,age) VALUES (?, ?, ?)";
 
-        try ( PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, name);
             pstmt.setString(2, lastName);
@@ -85,12 +86,12 @@ public class UserServices implements UserService {
             pstmt.setLong(1, id); // Подставляем значение в параметр
             int resultSet = pstmt.executeUpdate();
 
-            if (resultSet > 0){
+            if (resultSet > 0) {
                 System.out.println("User with ID " + id + " was successfully removed.");
             } else {
                 System.out.println("User with ID " + id + " does not exist.");
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -110,7 +111,7 @@ public class UserServices implements UserService {
                 user.setAge(resultSet.getInt("age"));
                 users.add(user);
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return users;

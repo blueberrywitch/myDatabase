@@ -28,6 +28,6 @@ public class MyDatabaseApplication {
 
         userService.getAllUsers().forEach(System.out::println);
 
-       userService.dropUsersTable("employees");
+        userService.dropUsersTable("employees");
     }
 }
