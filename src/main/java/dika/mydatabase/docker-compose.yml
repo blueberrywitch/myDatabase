@@ -1,0 +1,17 @@
+version: '3.8'  # Указываем версию Docker Compose
+
+services:  # Определение сервисов (контейнеров)
+
+  db:  # Сервис базы данных PostgreSQL
+    image: postgres:13  # Указываем образ PostgreSQL версии 13
+    environment:
+      POSTGRES_DB: mydatabase  # Имя базы данных, которая будет создана при первом запуске
+      POSTGRES_USER: user  # Имя пользователя, который будет создан автоматически
+      POSTGRES_PASSWORD: password  # Пароль для указанного пользователя
+    volumes:
+      - db_data:/var/lib/postgresql/data  # Подключаем volume для хранения данных PostgreSQL
+    ports:
+      - "5432:5432"  # Пробрасываем порт 5432 для доступа к базе данных из вне контейнера
+
+volumes:
+  db_data:

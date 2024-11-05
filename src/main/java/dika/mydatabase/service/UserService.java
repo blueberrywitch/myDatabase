@@ -2,6 +2,7 @@ package dika.mydatabase.service;
 
 import dika.mydatabase.model.User;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
@@ -9,9 +10,9 @@ import java.util.List;
 public interface UserService {
 
     static java.sql.Connection connection() {
-        java.sql.Connection connection = null;
+        Connection connection = null;
         try {
-            String url = "jdbc:postgresql://localhost:5432/mydatabase";
+            String url = "jdbc:postgresql://db:5432/mydatabase";
             String user = "user";
             String password = "password";
             connection = DriverManager.getConnection(url, user, password);
