@@ -12,7 +12,7 @@ public interface UserService {
     static java.sql.Connection connection() {
         Connection connection = null;
         try {
-            String url = "jdbc:postgresql://db:5432/mydatabase";
+            String url = "jdbc:postgresql://localhost:5432/mydatabase";
             String user = "user";
             String password = "password";
             connection = DriverManager.getConnection(url, user, password);

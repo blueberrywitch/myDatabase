@@ -12,12 +12,25 @@ import java.util.List;
 
 public class UserServices implements UserService {
 
+    private static UserServices instance;
+    private Connection conn;
+
+    public UserServices() throws SQLException {
+        this.conn = UserService.connection();
+    }
+
+    public static UserServices getInstance() throws SQLException {
+        if (instance == null || instance.conn.isClosed()) {
+            instance = new UserServices();
+        }
+        return instance;
+    }
+
     @Override
     public void addUser(String name, String lastName, int age) {
         String sql = "INSERT INTO employees (name, lastName,age) VALUES (?, ?, ?)";
 
-        try (Connection conn = UserService.connection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try ( PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, name);
             pstmt.setString(2, lastName);
@@ -42,8 +55,7 @@ public class UserServices implements UserService {
                 + " age NUMERIC"
                 + ");";
 
-        try (Connection conn = UserService.connection();
-             Statement stmt = conn.createStatement()) {
+        try (Statement stmt = conn.createStatement()) {
 
             stmt.execute(sql);
             System.out.println("Table created successfully.");
@@ -56,8 +68,7 @@ public class UserServices implements UserService {
     public void dropUsersTable(String tableName) {
         String sql = "DROP TABLE IF EXISTS " + tableName;
 
-        try (Connection conn = UserService.connection();
-             Statement stmt = conn.createStatement()) {
+        try (Statement stmt = conn.createStatement()) {
 
             stmt.executeUpdate(sql);
             System.out.println("Table " + tableName + " has been deleted successfully.");
@@ -70,8 +81,7 @@ public class UserServices implements UserService {
     public void removeUserById(long id) {
         String sql = "DELETE FROM employees WHERE id = ?";
 
-        try (Connection conn = UserService.connection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setLong(1, id); // Подставляем значение в параметр
             int resultSet = pstmt.executeUpdate();
 
@@ -90,8 +100,7 @@ public class UserServices implements UserService {
         String sql = "SELECT * FROM employees";
         List<User> users = new ArrayList<>();
 
-        try (Connection conn = UserService.connection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             ResultSet resultSet = pstmt.executeQuery();
             while (resultSet.next()) {
                 User user = new User();
@@ -111,8 +120,7 @@ public class UserServices implements UserService {
     public void cleanUsersTable() {
         String sql = "DELETE FROM employees";
 
-        try (Connection conn = UserService.connection();
-             Statement stmt = conn.createStatement()) {
+        try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(sql);
             System.out.println("Table cleaned successfully.");
         } catch (SQLException e) {
