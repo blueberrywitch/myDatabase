@@ -1,7 +1,6 @@
 package dika.mydatabase;
 
-import dika.mydatabase.service.UserService;
-import dika.mydatabase.service.UserServices;
+import dika.mydatabase.service.UserServiceJDBC;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.sql.SQLException;
@@ -9,25 +8,34 @@ import java.sql.SQLException;
 @SpringBootApplication
 public class MyDatabaseApplication {
 
+    private static MyDatabaseApplication instance;
+
+    public static MyDatabaseApplication getInstance() throws SQLException {
+        if (instance == null) {
+            instance = new MyDatabaseApplication();
+        }
+        return instance;
+    }
+
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
-        UserServices userService = new UserServices();
+        UserServiceJDBC userServiceJDBC = UserServiceJDBC.getInstance();
 
-        userService.createUsersTable();
+        userServiceJDBC.createUsersTable();
 
-        userService.addUser("Dika", "Dikov", 25);
-        userService.addUser("Vlad", "Kolesnikov", 19);
-        userService.addUser("Amir", "Matygulin", 27);
-        userService.addUser("Lera", "Stepchenkova", 21);
-        userService.addUser("Dina", "SDd", 1);
+        userServiceJDBC.addUser("Dika", "Dikov", 25);
+        userServiceJDBC.addUser("Vlad", "Kolesnikov", 19);
+        userServiceJDBC.addUser("Amir", "Matygulin", 27);
+        userServiceJDBC.addUser("Lera", "Stepchenkova", 21);
+        userServiceJDBC.addUser("Dina", "SDd", 1);
 
-        userService.removeUserById(1);
+        userServiceJDBC.removeUserById(1);
 
-        userService.getAllUsers().forEach(System.out::println);
+        userServiceJDBC.getAllUsers().forEach(System.out::println);
 
-        userService.cleanUsersTable();
+        userServiceJDBC.cleanUsersTable();
 
-        userService.getAllUsers().forEach(System.out::println);
+        userServiceJDBC.getAllUsers().forEach(System.out::println);
 
-        userService.dropUsersTable("employees");
+        userServiceJDBC.dropUsersTable("employees");
     }
 }

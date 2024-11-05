@@ -11,18 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class UserServices implements UserService {
+public class UserServiceJDBC implements UserService {
 
-    private static UserServices instance;
-    private Connection conn;
+    private static UserServiceJDBC instance;
+    private final Connection conn;
 
-    public UserServices() throws SQLException {
-        this.conn = UserService.connection();
+    private UserServiceJDBC() throws SQLException {
+        this.conn = dika.mydatabase.util.Connection.connection();
     }
 
-    public static UserServices getInstance() throws SQLException {
+    public static UserServiceJDBC getInstance() throws SQLException {
         if (instance == null || instance.conn.isClosed()) {
-            instance = new UserServices();
+            instance = new UserServiceJDBC();
         }
         return instance;
     }
