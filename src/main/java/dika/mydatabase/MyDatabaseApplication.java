@@ -1,5 +1,7 @@
 package dika.mydatabase;
 
+import dika.mydatabase.dao.UserDaoHibernateImpl;
+import dika.mydatabase.dao.UserDaoJDBCImpl;
 import dika.mydatabase.service.UserServiceJDBC;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -18,14 +20,15 @@ public class MyDatabaseApplication {
     }
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
-        try (UserServiceJDBC userServiceJDBC = UserServiceJDBC.getInstance()) {
+        try (UserDaoHibernateImpl userDaoJDBCImpl = UserDaoHibernateImpl.getInstance()) {
+            UserServiceJDBC userServiceJDBC = new UserServiceJDBC();
             userServiceJDBC.createUsersTable();
 
-            userServiceJDBC.addUser("Dika", "Dikov", 25);
-            userServiceJDBC.addUser("Vlad", "Kolesnikov", 19);
-            userServiceJDBC.addUser("Amir", "Matygulin", 27);
-            userServiceJDBC.addUser("Lera", "Stepchenkova", 21);
-            userServiceJDBC.addUser("Dina", "SDd", 1);
+            userServiceJDBC.saveUser("Dika", "Dikov", (byte) 25);
+            userServiceJDBC.saveUser("Vlad", "Kolesnikov", (byte)19);
+            userServiceJDBC.saveUser("Amir", "Matygulin", (byte)27);
+            userServiceJDBC.saveUser("Lera", "Stepchenkova", (byte)21);
+            userServiceJDBC.saveUser("Dina", "SDd", (byte)1);
 
             userServiceJDBC.removeUserById(1);
 
@@ -35,7 +38,7 @@ public class MyDatabaseApplication {
 
             userServiceJDBC.getAllUsers().forEach(System.out::println);
 
-            userServiceJDBC.dropUsersTable("employees");
+            userServiceJDBC.dropUsersTable();
         } catch (Exception e) {
             System.out.println("Error initializing UserServiceJDBC: " + e.getMessage());
         }

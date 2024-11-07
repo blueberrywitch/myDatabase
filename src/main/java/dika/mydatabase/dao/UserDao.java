@@ -1,16 +1,14 @@
-package dika.mydatabase.service;
+package dika.mydatabase.dao;
 
 import dika.mydatabase.model.User;
-
 import java.util.List;
 
-public interface UserService {
-
-    void saveUser(String name, String lastName, byte age);
-
+public interface UserDao {
     void createUsersTable();
 
     void dropUsersTable();
+
+    void saveUser(String name, String lastName, byte age);
 
     void removeUserById(long id);
 
