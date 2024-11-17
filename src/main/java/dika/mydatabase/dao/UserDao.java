@@ -10,7 +10,7 @@ public interface UserDao {
 
     void saveUser(String name, String lastName, byte age);
 
-    void removeUserById(long id);
+    void removeUserById(long id) throws Exception;
 
     List<User> getAllUsers();
 

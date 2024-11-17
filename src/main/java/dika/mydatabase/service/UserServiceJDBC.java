@@ -22,7 +22,7 @@ public class UserServiceJDBC implements UserService {
         System.out.println("User saved " + name + " " + lastName + " " + age);
     }
 
-    public void removeUserById(long id) {
+    public void removeUserById(long id) throws Exception {
         userDao.removeUserById(id);
     }
 

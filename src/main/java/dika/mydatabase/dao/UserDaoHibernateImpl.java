@@ -24,7 +24,6 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
         return instance;
     }
 
-
     @Override
     public void createUsersTable() {
 
@@ -65,13 +64,13 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
 
 
     @Override
-    public void removeUserById(long id) {
+    public void removeUserById(long id) throws Exception {
         try (Session session = factory.openSession()) {
             User user = session.find(User.class, id);
             session.remove(user);
             session.flush();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new Exception("юзера с таким id не существует");
         }
     }
 

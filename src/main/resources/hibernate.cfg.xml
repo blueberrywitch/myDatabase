@@ -11,7 +11,7 @@
         <property name="hibernate.connection.password">password</property>
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
 
-        <mapping class="jdbc.jpa.model.User"/>
+        <mapping class="dika.mydatabase.model.User"/>
         <!-- Добавьте другие классы сущностей аналогично -->
     </session-factory>
 </hibernate-configuration>
