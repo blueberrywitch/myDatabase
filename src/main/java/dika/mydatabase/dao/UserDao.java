@@ -1,6 +1,8 @@
 package dika.mydatabase.dao;
 
+import dika.mydatabase.exceptions.UserNotSavedException;
 import dika.mydatabase.model.User;
+
 import java.util.List;
 
 public interface UserDao {
@@ -8,9 +10,9 @@ public interface UserDao {
 
     void dropUsersTable();
 
-    void saveUser(String name, String lastName, byte age);
+    void saveUser(String name, String lastName, byte age) throws UserNotSavedException;
 
-    void removeUserById(long id) throws Exception;
+    void removeUserById(long id);
 
     List<User> getAllUsers();
 

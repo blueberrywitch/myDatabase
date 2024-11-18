@@ -1,21 +1,23 @@
 package dika.mydatabase.dao;
 
+import dika.mydatabase.exceptions.UserNotSavedException;
 import dika.mydatabase.model.User;
-import dika.mydatabase.util.MyException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
+import java.util.Collections;
 import java.util.List;
 
 
 @Slf4j
 public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
 
-    private SessionFactory factory;
     static UserDaoHibernateImpl instance;
+    private final SessionFactory factory;
+
     public UserDaoHibernateImpl() {
         factory = new Configuration().configure().buildSessionFactory();
     }
@@ -38,9 +40,8 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
         try (Session session = factory.openSession()) {
             transaction = session.beginTransaction();
             session.createNativeQuery("DROP TABLE IF EXISTS users").executeUpdate();
-
             transaction.commit();
-            System.out.println("Table 'users' dropped successfully.");
+            log.info("Table 'users' dropped successfully.");
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
@@ -50,26 +51,24 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
     }
 
     @Override
-    public void saveUser(String name, String lastName, byte age) {
-
-        log.info("user saved");
+    public void saveUser(String name, String lastName, byte age) throws UserNotSavedException {
         User user = new User(name, lastName, age);
         Transaction transaction = null;
         try (Session session = factory.openSession()) {
             transaction = session.beginTransaction();
             session.save(user);
             transaction.commit();
+            log.info("User saved with name {}", name);
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
-            e.printStackTrace();
+            throw new UserNotSavedException("User not saved", e);
         }
     }
 
-
     @Override
-    public void removeUserById(long id) throws Exception {
+    public void removeUserById(long id) {
         Transaction transaction = null;
         try (Session session = factory.openSession()) {
             User user = session.find(User.class, id);
@@ -77,8 +76,8 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
             session.remove(user);
             transaction.commit();
             log.info("user removed");
-        } catch (IllegalArgumentException e){
-            System.out.println("нет юзера с таким айди");
+        } catch (IllegalArgumentException e) {
+            log.error("User not found");
         }
     }
 
@@ -88,7 +87,7 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
             return session.createQuery("FROM User", User.class).getResultList();
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return Collections.emptyList();
         }
     }
 

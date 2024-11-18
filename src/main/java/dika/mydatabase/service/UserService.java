@@ -12,7 +12,7 @@ public interface UserService {
 
     void dropUsersTable();
 
-    void removeUserById(long id) throws Exception;
+    void removeUserById(long id);
 
     List<User> getAllUsers();
 
