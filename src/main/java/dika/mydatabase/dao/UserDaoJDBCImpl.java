@@ -29,7 +29,7 @@ public class UserDaoJDBCImpl implements UserDao, AutoCloseable {
 
         @Override
         public void saveUser(String name, String lastName, byte age) {
-            String sql = "INSERT INTO employees (name, lastName,age) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO users (name, lastName,age) VALUES (?, ?, ?)";
 
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -49,7 +49,7 @@ public class UserDaoJDBCImpl implements UserDao, AutoCloseable {
         @Override
         public void createUsersTable() {
 
-            String sql = "CREATE TABLE IF NOT EXISTS employees (" + " id serial PRIMARY KEY," + " name VARCHAR(100) NOT NULL," + " lastName VARCHAR(50)," + " age NUMERIC" + ");";
+            String sql = "CREATE TABLE IF NOT EXISTS users (" + " id serial PRIMARY KEY," + " name VARCHAR(100) NOT NULL," + " lastName VARCHAR(50)," + " age NUMERIC" + ");";
 
             try (Statement stmt = conn.createStatement()) {
 
@@ -62,12 +62,12 @@ public class UserDaoJDBCImpl implements UserDao, AutoCloseable {
 
     @Override
     public void dropUsersTable() {
-            String sql = "DROP TABLE IF EXISTS " + "employees";
+            String sql = "DROP TABLE IF EXISTS " + "users";
 
             try (Statement stmt = conn.createStatement()) {
 
                 stmt.executeUpdate(sql);
-                System.out.println("Table " + "employees" + " has been deleted successfully.");
+                System.out.println("Table " + "users" + " has been deleted successfully.");
             } catch (SQLException e) {
                 System.out.println("Error deleting table: " + e.getMessage());
             }
@@ -75,7 +75,7 @@ public class UserDaoJDBCImpl implements UserDao, AutoCloseable {
 
         @Override
         public void removeUserById(long id) {
-            String sql = "DELETE FROM employees WHERE id = ?";
+            String sql = "DELETE FROM users WHERE id = ?";
 
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setLong(1, id); // Подставляем значение в параметр
@@ -93,7 +93,7 @@ public class UserDaoJDBCImpl implements UserDao, AutoCloseable {
 
         @Override
         public List<User> getAllUsers() {
-            String sql = "SELECT * FROM employees";
+            String sql = "SELECT * FROM users";
             List<User> users = new ArrayList<>();
 
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -103,7 +103,7 @@ public class UserDaoJDBCImpl implements UserDao, AutoCloseable {
                     user.setId(resultSet.getLong("id"));
                     user.setName(resultSet.getString("name"));
                     user.setLastName(resultSet.getString("lastName"));
-                    user.setAge(resultSet.getInt("age"));
+                    user.setAge(resultSet.getByte("age"));
                     users.add(user);
                 }
             } catch (SQLException e) {
@@ -114,7 +114,7 @@ public class UserDaoJDBCImpl implements UserDao, AutoCloseable {
 
         @Override
         public void cleanUsersTable() {
-            String sql = "DELETE FROM employees";
+            String sql = "DELETE FROM users";
 
             try (Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate(sql);

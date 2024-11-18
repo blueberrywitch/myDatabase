@@ -1,14 +1,17 @@
 package dika.mydatabase.dao;
 
 import dika.mydatabase.model.User;
+import dika.mydatabase.util.MyException;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
-
 import java.util.List;
 
+
+@Slf4j
 public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
 
     private SessionFactory factory;
@@ -48,6 +51,8 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
+
+        log.info("user saved");
         User user = new User(name, lastName, age);
         Transaction transaction = null;
         try (Session session = factory.openSession()) {
@@ -65,12 +70,15 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
 
     @Override
     public void removeUserById(long id) throws Exception {
+        Transaction transaction = null;
         try (Session session = factory.openSession()) {
             User user = session.find(User.class, id);
+            transaction = session.beginTransaction();
             session.remove(user);
-            session.flush();
-        } catch (Exception e) {
-            throw new Exception("юзера с таким id не существует");
+            transaction.commit();
+            log.info("user removed");
+        } catch (IllegalArgumentException e){
+            System.out.println("нет юзера с таким айди");
         }
     }
 
@@ -92,6 +100,7 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
             session.createQuery("DELETE FROM User").executeUpdate();
 
             transaction.commit();
+
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();

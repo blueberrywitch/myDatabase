@@ -3,6 +3,8 @@ package dika.mydatabase;
 import dika.mydatabase.dao.UserDaoHibernateImpl;
 import dika.mydatabase.dao.UserDaoJDBCImpl;
 import dika.mydatabase.service.UserServiceJDBC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.sql.SQLException;
@@ -10,6 +12,7 @@ import java.sql.SQLException;
 @SpringBootApplication
 public class MyDatabaseApplication {
 
+    private static final Logger log = LoggerFactory.getLogger(MyDatabaseApplication.class);
     private static MyDatabaseApplication instance;
 
     public static MyDatabaseApplication getInstance() throws SQLException {
@@ -20,25 +23,25 @@ public class MyDatabaseApplication {
     }
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
-        try (UserDaoHibernateImpl userDaoJDBCImpl = UserDaoHibernateImpl.getInstance()) {
-            UserServiceJDBC userServiceJDBC = new UserServiceJDBC();
-            userServiceJDBC.createUsersTable();
+        try (UserDaoHibernateImpl userDaoHibernateImpl = UserDaoHibernateImpl.getInstance()) {
 
-            userServiceJDBC.saveUser("Dika", "Dikov", (byte) 25);
-            userServiceJDBC.saveUser("Vlad", "Kolesnikov", (byte)19);
-            userServiceJDBC.saveUser("Amir", "Matygulin", (byte)27);
-            userServiceJDBC.saveUser("Lera", "Stepchenkova", (byte)21);
-            userServiceJDBC.saveUser("Dina", "SDd", (byte)1);
 
-            userServiceJDBC.removeUserById(1);
+            userDaoHibernateImpl.saveUser("Dika", "Dikov", (byte) 25);
 
-            userServiceJDBC.getAllUsers().forEach(System.out::println);
+            userDaoHibernateImpl.saveUser("Vlad", "Kolesnikov", (byte)19);
+            userDaoHibernateImpl.saveUser("Amir", "Matygulin", (byte)27);
+            userDaoHibernateImpl.saveUser("Lera", "Stepchenkova", (byte)21);
+            userDaoHibernateImpl.saveUser("Dina", "SDd", (byte)1);
 
-            userServiceJDBC.cleanUsersTable();
+            userDaoHibernateImpl.removeUserById(234);
 
-            userServiceJDBC.getAllUsers().forEach(System.out::println);
+            userDaoHibernateImpl.getAllUsers().forEach(System.out::println);
 
-            userServiceJDBC.dropUsersTable();
+            userDaoHibernateImpl.cleanUsersTable();
+
+            userDaoHibernateImpl.getAllUsers().forEach(System.out::println);
+
+            userDaoHibernateImpl.dropUsersTable();
         } catch (Exception e) {
             System.out.println("Error initializing UserServiceJDBC: " + e.getMessage());
         }
