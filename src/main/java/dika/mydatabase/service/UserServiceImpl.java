@@ -2,11 +2,12 @@ package dika.mydatabase.service;
 
 import dika.mydatabase.dao.UserDao;
 import dika.mydatabase.dao.UserDaoHibernateImpl;
+import dika.mydatabase.exceptions.UserNotSavedException;
 import dika.mydatabase.model.User;
 
 import java.util.List;
 
-public class UserServiceJDBC implements UserService {
+public class UserServiceImpl implements UserService {
     UserDao userDao = new UserDaoHibernateImpl();
 
     public void createUsersTable() {
@@ -18,18 +19,20 @@ public class UserServiceJDBC implements UserService {
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        userDao.saveUser(name, lastName, age);
+        try {
+            userDao.saveUser(name, lastName, age);
+        } catch (UserNotSavedException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("User saved " + name + " " + lastName + " " + age);
     }
 
-    public void removeUserById(long id) throws Exception {
+    public void removeUserById(long id) {
         userDao.removeUserById(id);
     }
 
     public List<User> getAllUsers() {
-        List<User> users = userDao.getAllUsers();
-        for (User user : users) System.out.println(user);
-        return users;
+        return userDao.getAllUsers();
     }
 
     public void cleanUsersTable() {
