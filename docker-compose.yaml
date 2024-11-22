@@ -1,8 +1,8 @@
 version: '3.8'  # Указываем версию Docker Compose
 
-services:  # Определение сервисов (контейнеров)
+services: # Определение сервисов (контейнеров)
 
-  db:  # Сервис базы данных PostgreSQL
+  db: # Сервис базы данных PostgreSQL
     image: postgres:13  # Указываем образ PostgreSQL версии 13
     environment:
       POSTGRES_DB: mydatabase  # Имя базы данных, которая будет создана при первом запуске

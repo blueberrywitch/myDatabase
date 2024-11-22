@@ -1,5 +1,9 @@
 package dika.mydatabase.dao;
 
+import dika.mydatabase.exceptions.TableNotCleanedException;
+import dika.mydatabase.exceptions.TableNotDropedException;
+import dika.mydatabase.exceptions.UserNotRemovedException;
+import dika.mydatabase.exceptions.UsersNotGotException;
 import dika.mydatabase.model.User;
 import dika.mydatabase.util.DatabaseConnection;
 
@@ -61,7 +65,7 @@ public class UserDaoJDBCImpl implements UserDao, AutoCloseable {
     }
 
     @Override
-    public void dropUsersTable() {
+    public void dropUsersTable() throws TableNotDropedException {
         String sql = "DROP TABLE IF EXISTS " + "users";
 
         try (Statement stmt = conn.createStatement()) {
@@ -69,12 +73,12 @@ public class UserDaoJDBCImpl implements UserDao, AutoCloseable {
             stmt.executeUpdate(sql);
             System.out.println("Table " + "users" + " has been deleted successfully.");
         } catch (SQLException e) {
-            System.out.println("Error deleting table: " + e.getMessage());
+            throw new TableNotDropedException("Table not dropped", e);
         }
     }
 
     @Override
-    public void removeUserById(long id) {
+    public void removeUserById(long id) throws UserNotRemovedException {
         String sql = "DELETE FROM users WHERE id = ?";
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -87,12 +91,12 @@ public class UserDaoJDBCImpl implements UserDao, AutoCloseable {
                 System.out.println("User with ID " + id + " does not exist.");
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            throw new UserNotRemovedException("User not removed", e);
         }
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers() throws UsersNotGotException {
         String sql = "SELECT * FROM users";
         List<User> users = new ArrayList<>();
 
@@ -107,20 +111,20 @@ public class UserDaoJDBCImpl implements UserDao, AutoCloseable {
                 users.add(user);
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            throw new UsersNotGotException("Users not got", e);
         }
         return users;
     }
 
     @Override
-    public void cleanUsersTable() {
+    public void cleanUsersTable() throws TableNotCleanedException {
         String sql = "DELETE FROM users";
 
         try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(sql);
             System.out.println("Table cleaned successfully.");
         } catch (SQLException e) {
-            System.out.println("Error cleaning table: " + e.getMessage());
+            throw new TableNotCleanedException("Table not cleaned", e);
         }
     }
 
