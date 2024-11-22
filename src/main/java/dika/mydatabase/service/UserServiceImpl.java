@@ -2,7 +2,11 @@ package dika.mydatabase.service;
 
 import dika.mydatabase.dao.UserDao;
 import dika.mydatabase.dao.UserDaoHibernateImpl;
+import dika.mydatabase.exceptions.TableNotCleanedException;
+import dika.mydatabase.exceptions.TableNotDropedException;
+import dika.mydatabase.exceptions.UserNotRemovedException;
 import dika.mydatabase.exceptions.UserNotSavedException;
+import dika.mydatabase.exceptions.UsersNotGotException;
 import dika.mydatabase.model.User;
 
 import java.util.List;
@@ -15,7 +19,11 @@ public class UserServiceImpl implements UserService {
     }
 
     public void dropUsersTable() {
-        userDao.dropUsersTable();
+        try{
+            userDao.dropUsersTable();
+        } catch (TableNotDropedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void saveUser(String name, String lastName, byte age) {
@@ -27,15 +35,31 @@ public class UserServiceImpl implements UserService {
         System.out.println("User saved " + name + " " + lastName + " " + age);
     }
 
-    public void removeUserById(long id) {
-        userDao.removeUserById(id);
+    public void removeUserById(long id){
+        try{
+            userDao.removeUserById(id);
+        }
+        catch(UserNotRemovedException e){
+            throw new RuntimeException(e);
+        }
+
     }
 
     public List<User> getAllUsers() {
-        return userDao.getAllUsers();
+        try{
+            return userDao.getAllUsers();
+        } catch (UsersNotGotException e){
+            throw new RuntimeException(e);
+        }
+
     }
 
     public void cleanUsersTable() {
-        userDao.cleanUsersTable();
+        try{
+            userDao.cleanUsersTable();
+        } catch (TableNotCleanedException e){
+            throw new RuntimeException(e);
+        }
+
     }
 }

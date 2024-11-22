@@ -1,6 +1,10 @@
 package dika.mydatabase.dao;
 
+import dika.mydatabase.exceptions.TableNotCleanedException;
+import dika.mydatabase.exceptions.TableNotDropedException;
+import dika.mydatabase.exceptions.UserNotRemovedException;
 import dika.mydatabase.exceptions.UserNotSavedException;
+import dika.mydatabase.exceptions.UsersNotGotException;
 import dika.mydatabase.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
@@ -8,7 +12,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
-import java.util.Collections;
 import java.util.List;
 
 
@@ -35,7 +38,7 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
     }
 
     @Override
-    public void dropUsersTable() {
+    public void dropUsersTable() throws TableNotDropedException {
         Transaction transaction = null;
         try (Session session = factory.openSession()) {
             transaction = session.beginTransaction();
@@ -43,10 +46,10 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
             transaction.commit();
             log.info("Table 'users' dropped successfully.");
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
+            if (transaction != null && transaction.getStatus().canRollback()) {
+                    transaction.rollback();
             }
-            e.printStackTrace();
+           throw new TableNotDropedException("Table not dropped", e);
         }
     }
 
@@ -56,7 +59,7 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
         Transaction transaction = null;
         try (Session session = factory.openSession()) {
             transaction = session.beginTransaction();
-            session.save(user);
+            session.persist(user);
             transaction.commit();
             log.info("User saved with name {}", name);
         } catch (Exception e) {
@@ -68,43 +71,51 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
     }
 
     @Override
-    public void removeUserById(long id) {
+    public void removeUserById(long id) throws UserNotRemovedException {
         Transaction transaction = null;
         try (Session session = factory.openSession()) {
-            User user = session.find(User.class, id);
             transaction = session.beginTransaction();
+            User user = session.find(User.class, id);
+            if (user == null) {
+                throw new UserNotRemovedException("User not found");
+            }
             session.remove(user);
             transaction.commit();
-            log.info("user removed");
-        } catch (IllegalArgumentException e) {
-            log.error("User not found");
+        } catch (Exception e) {
+            if (transaction != null && transaction.getStatus().canRollback()) {
+                try {
+                    transaction.rollback(); // Откат изменений при ошибке
+                    log.info("Transaction rolled back successfully.");
+                } catch (Exception rollbackEx) {
+                    log.error("Failed to rollback the transaction: {}", rollbackEx.getMessage(), rollbackEx);
+                }
+            }
+            log.error("Failed to drop the table 'users': {}", e.getMessage(), e);
+            throw new UserNotRemovedException("User not found", e);
         }
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers() throws UsersNotGotException{
         try (Session session = factory.openSession()) {
             return session.createQuery("FROM User", User.class).getResultList();
         } catch (Exception e) {
-            e.printStackTrace();
-            return Collections.emptyList();
+            throw new UsersNotGotException("Users not got", e);
         }
     }
 
     @Override
-    public void cleanUsersTable() {
+    public void cleanUsersTable() throws TableNotCleanedException {
         Transaction transaction = null;
         try (Session session = factory.openSession()) {
             transaction = session.beginTransaction();
             session.createQuery("DELETE FROM User").executeUpdate();
-
             transaction.commit();
-
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
-            e.printStackTrace();
+            throw new TableNotCleanedException("Table not cleaned", e);
         }
     }
 
